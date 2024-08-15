@@ -36,6 +36,32 @@ async function run() {
     const usersCollection = client.db("gadgetgrove").collection("users");
     const menuCollection = client.db("gadgetgrove").collection("menu");
 
+    // save user data in db
+    app.put("/user", async (req, res) => {
+      const user = req.body;
+      const filter = { email: user?.email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          name: user?.name,
+          email: user?.email,
+          photo: user?.photo,
+          lastLogin: user?.lastLogin,
+        },
+        $setOnInsert: {
+          role: user?.role,
+          status: user?.status,
+          createdAt: user?.createdAt,
+        },
+      };
+      const result = await usersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
+
     // console.log("You successfully connected to MongoDB!");
   } finally {
   }

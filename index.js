@@ -62,6 +62,43 @@ async function run() {
       res.send(result);
     });
 
+    // get all products
+    app.get("/products", async (req, res) => {
+      const size = parseInt(req.query.size) || 6;
+      const page = parseInt(req.query.page) - 1;
+      const search = req.query.search || "";
+      const category = req.query.category || "";
+      const brand = req.query.brand || "";
+      const minPrice = parseInt(req.query.minPrice) || 0;
+      const maxPrice = parseInt(req.query.maxPrice) || 20000;
+      const sort = req.query.sort || "";
+
+      const query = {
+        product_name: { $regex: search, $options: "i" },
+        product_category: { $regex: category, $options: "i" },
+        product_brand: { $regex: brand, $options: "i" },
+        price: { $gte: minPrice, $lte: maxPrice },
+      };
+
+      let products = menuCollection.find(query);
+
+      if (sort === "lth") {
+        products = products.sort({ price: 1 }); // low to high
+      } else if (sort === "htl") {
+        products = products.sort({ price: -1 }); // high to low
+      } else if (sort === "new") {
+        products = products.sort({ createdAt: -1 }); // new to old
+      }
+
+      const count = await menuCollection.countDocuments(query);
+
+      const productsData = await products
+        .skip(page * size)
+        .limit(size)
+        .toArray();
+      res.send({ productsData, count });
+    });
+
     // console.log("You successfully connected to MongoDB!");
   } finally {
   }

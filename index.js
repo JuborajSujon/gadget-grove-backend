@@ -116,6 +116,17 @@ async function run() {
 
     // get all products brandlist
 
+    app.get("/products/brand", async (req, res) => {
+      const brandList = await menuCollection
+        .aggregate([
+          { $group: { _id: "$product_brand" } },
+          { $project: { _id: 0, brand: "$_id" } },
+        ])
+        .toArray();
+      const brands = brandList.map((item) => item.brand);
+      res.send(brands);
+    });
+
     // get all products maxprice
 
     // console.log("You successfully connected to MongoDB!");

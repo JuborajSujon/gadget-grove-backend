@@ -99,6 +99,25 @@ async function run() {
       res.send({ productsData, count });
     });
 
+    // get all products categorylist
+    app.get("/products/category", async (req, res) => {
+      const categoryList = await menuCollection
+        .aggregate([
+          { $group: { _id: "$product_category" } },
+          { $project: { _id: 0, category: "$_id" } },
+        ])
+        .toArray();
+
+      const categories = categoryList.map((item) => item.category);
+
+      console.log(categories);
+      res.send(categories);
+    });
+
+    // get all products brandlist
+
+    // get all products maxprice
+
     // console.log("You successfully connected to MongoDB!");
   } finally {
   }

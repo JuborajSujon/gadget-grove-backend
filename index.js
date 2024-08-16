@@ -129,6 +129,16 @@ async function run() {
 
     // get all products maxprice
 
+    app.get("/products/max-price", async (req, res) => {
+      const maxPriceNumber = await menuCollection
+        .aggregate([
+          { $group: { _id: null, maxPrice: { $max: "$price" } } },
+          { $project: { _id: 0, maxPrice: 1 } },
+        ])
+        .toArray();
+      res.send(maxPriceNumber);
+    });
+
     // console.log("You successfully connected to MongoDB!");
   } finally {
   }

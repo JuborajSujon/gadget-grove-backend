@@ -11,6 +11,8 @@ const corsOptions = {
     "http://localhost:5173",
     "http://localhost:5174",
     "https://gadget-and-grove.web.app",
+    "https://gadget-and-grove.firebaseapp.com",
+    "https://gadget-and-grove.netlify.app",
   ],
   credentials: true,
   optionSuccessStatus: 200,

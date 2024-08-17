@@ -109,6 +109,13 @@ async function run() {
       res.send({ productsData, count });
     });
 
+    // Post new product
+    app.post("/product", async (req, res) => {
+      const product = req.body;
+      const result = await menuCollection.insertOne(product);
+      res.send(result);
+    });
+
     // get all products categorylist
     app.get("/products/category", async (req, res) => {
       const search = req.query.search || "";

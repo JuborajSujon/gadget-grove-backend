@@ -64,6 +64,14 @@ async function run() {
       res.send(result);
     });
 
+    // get all users base on email
+    app.get("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      res.send(user);
+    });
+
     // get all products
     app.get("/products", async (req, res) => {
       const size = parseInt(req.query.size) || 6;

@@ -70,7 +70,7 @@ async function run() {
       const category = req.query.category || "";
       const brand = req.query.brand || "";
       const minPrice = parseInt(req.query.minPrice) || 0;
-      const maxPrice = parseInt(req.query.maxPrice) || 20000;
+      const maxPrice = parseInt(req.query.maxPrice) || 200000;
       const sort = req.query.sort || "";
 
       const query = {
@@ -101,28 +101,32 @@ async function run() {
 
     // get all products categorylist
     app.get("/products/category", async (req, res) => {
-      const categoryList = await menuCollection
-        .aggregate([
-          { $group: { _id: "$product_category" } },
-          { $project: { _id: 0, category: "$_id" } },
-        ])
-        .toArray();
+      const search = req.query.search || "";
+      const category = req.query.category || "";
+      const brand = req.query.brand || "";
 
-      const categories = categoryList.map((item) => item.category);
-      res.send(categories);
-    });
+      const query = {
+        product_name: { $regex: search, $options: "i" },
+        product_category: { $regex: category, $options: "i" },
+        product_brand: { $regex: brand, $options: "i" },
+      };
 
-    // get all products brandlist
+      let products = menuCollection.find(query);
 
-    app.get("/products/brand", async (req, res) => {
-      const brandList = await menuCollection
-        .aggregate([
-          { $group: { _id: "$product_brand" } },
-          { $project: { _id: 0, brand: "$_id" } },
-        ])
-        .toArray();
-      const brands = brandList.map((item) => item.brand);
-      res.send(brands);
+      // Convert cursor to array to get the products
+      const productsList = await products.toArray();
+
+      // Extract unique categories from the filtered products
+      const categories = [
+        ...new Set(productsList.map((product) => product.product_category)),
+      ];
+
+      // Extract unique brands from the filtered products
+      const brands = [
+        ...new Set(productsList.map((product) => product.product_brand)),
+      ];
+
+      res.send({ categories, brands });
     });
 
     // get all products maxprice

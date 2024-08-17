@@ -87,7 +87,7 @@ async function run() {
       } else if (sort === "htl") {
         products = products.sort({ price: -1 }); // high to low
       } else if (sort === "new") {
-        products = products.sort({ createdAt: -1 }); // new to old
+        products = products.sort({ published_date: -1 }); // new to old
       }
 
       const count = await menuCollection.countDocuments(query);
@@ -109,8 +109,6 @@ async function run() {
         .toArray();
 
       const categories = categoryList.map((item) => item.category);
-
-      console.log(categories);
       res.send(categories);
     });
 
